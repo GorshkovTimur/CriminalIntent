@@ -14,12 +14,16 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class CrimeFragment extends Fragment {
 
     private Crime mCrime;
     private EditText mTitleField;
     private Button mdateButton;
     private CheckBox mSolvedCheckBox;
+    private SimpleDateFormat sdf;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
         mTitleField =v.findViewById(R.id.crime_title);
+        sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm");
         mTitleField.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -50,7 +55,7 @@ public class CrimeFragment extends Fragment {
         });
 
         mdateButton = v.findViewById(R.id.crime_date);
-        mdateButton.setText(mCrime.getDate().toString());
+        mdateButton.setText(sdf.format(mCrime.getDate()));
         mdateButton.setEnabled(false);
 
         mSolvedCheckBox = v.findViewById(R.id.crime_solved);
