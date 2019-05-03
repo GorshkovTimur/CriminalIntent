@@ -9,12 +9,11 @@ import java.util.UUID;
 public class CrimeLab {
 
     private static CrimeLab sCrimeLab;
+    private List<Crime> mCrimes;
 
     public List<Crime> getCrimes() {
         return mCrimes;
     }
-
-    private List<Crime> mCrimes;
 
     public static CrimeLab get (Context context){
         if (sCrimeLab == null){
@@ -23,7 +22,14 @@ public class CrimeLab {
         return sCrimeLab;
     }
     private CrimeLab(Context context){
+
         mCrimes = new ArrayList<>();
+        for (int i=0; i<100; i++){
+            Crime crime = new Crime();
+            crime.setTitile("Crime # " + i);
+            crime.setSolved(i%2 == 0);
+            mCrimes.add(crime);
+        }
     }
 
     public Crime getCrime (UUID id){
