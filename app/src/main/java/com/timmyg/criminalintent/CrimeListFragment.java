@@ -1,5 +1,6 @@
 package com.timmyg.criminalintent;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,10 +18,19 @@ import java.util.List;
 
 public class CrimeListFragment extends Fragment {
 
+    private static final int REQUEST_CRIME = 1;
+
     private RecyclerView mCrineRecyclerView;
     private CrimeAdapter adapter;
     private Crime mCrime;
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CRIME){
+
+        }
+    }
 
     @Nullable
     @Override
@@ -34,11 +44,23 @@ public class CrimeListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
     private void updateUI() {
         CrimeLab lab = CrimeLab.get(getActivity());
         List<Crime> crimes = lab.getCrimes();
-        adapter = new CrimeAdapter(crimes);
-        mCrineRecyclerView.setAdapter(adapter);
+
+        if (adapter == null){
+            adapter = new CrimeAdapter(crimes);
+            mCrineRecyclerView.setAdapter(adapter);
+        } else {
+            adapter.notifyDataSetChanged();
+        }
+
 
     }
 
@@ -54,6 +76,7 @@ public class CrimeListFragment extends Fragment {
             mDateTextView = itemView.findViewById(R.id.list_iten_date_text_view);
             mSolvedCheckBox = itemView.findViewById(R.id.list_item_crimes_solved_check_box);
 
+
         }
 
         public void bindCrime (Crime crime){
@@ -67,9 +90,8 @@ public class CrimeListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getActivity(),
-                    mCrime.getTitle() + " clicked!", Toast.LENGTH_SHORT)
-                    .show();
+           Intent intent = MainActivity.newIntent(getActivity(),mCrime.getId());
+           startActivityForResult(intent, REQUEST_CRIME);
         }
     }
 
