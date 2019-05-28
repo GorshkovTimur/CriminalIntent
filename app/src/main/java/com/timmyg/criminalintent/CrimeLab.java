@@ -2,11 +2,12 @@ package com.timmyg.criminalintent;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.timmyg.criminalintent.database.CrimeBaseHelper;
-import com.timmyg.criminalintent.database.CrimeDbSchema;
 import com.timmyg.criminalintent.database.CrimeDbSchema.CrimeTable;
+import com.timmyg.criminalintent.database.CrimeCursorWrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,18 @@ public class CrimeLab {
     }
 
     public List<Crime> getCrimes() {
-        return new ArrayList<>();
+        List<Crime> crimes = new ArrayList<>();
+        CrimeCursorWrapper cursor = queryCrimes(null,null);
+
+        try {cursor.moveToFirst();
+            while (!cursor.isAfterLast()){
+            crimes.add(cursor.getCrime());
+            cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return crimes;
     }
 
     public static CrimeLab get (Context context){
@@ -41,7 +53,18 @@ public class CrimeLab {
     }
 
     public Crime getCrime (UUID id){
-        return null;
+        CrimeCursorWrapper cursor = queryCrimes(CrimeTable.Cols.UUID + " = ?", new String[]{id.toString()});
+
+        try {
+            if (cursor.getCount() == 0){
+                return null;
+            }
+
+            cursor.moveToFirst();
+            return cursor.getCrime();
+        } finally {
+            cursor.close();
+        }
     }
 
     public void updateCrime (Crime crime){
@@ -60,5 +83,17 @@ public class CrimeLab {
 
         return values;
 
+    }
+
+    private CrimeCursorWrapper queryCrimes (String whereClause, String[] whereArgs){
+        Cursor cursor = mDatabase.query(CrimeTable.Name,
+                null,
+                whereClause,
+                whereArgs,
+                null,
+                null,
+                null);
+
+        return new CrimeCursorWrapper(cursor);
     }
 }
