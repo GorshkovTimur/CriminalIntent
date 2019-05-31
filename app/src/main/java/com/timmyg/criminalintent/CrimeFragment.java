@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,6 +43,8 @@ public class CrimeFragment extends Fragment {
     private SimpleDateFormat sdf;
     private Button mReportButton;
     private Button mSuspectButton;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
 
     public static CrimeFragment newInstance (UUID crimeId){
         Bundle args = new Bundle();
@@ -61,11 +65,7 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             updateButton();
 
-            PackageManager packageManager = getActivity().getPackageManager();
 
-            if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null){
-                mSuspectButton.setEnabled(false);
-            }
 
         } else if (requestCode == REQUEST_CONTACT && data != null){
             Uri contactUri = data.getData();
@@ -107,6 +107,8 @@ public class CrimeFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
         mReportButton = v.findViewById(R.id.crime_report);
         mTitleField =v.findViewById(R.id.crime_title);
+        mPhotoButton = v.findViewById(R.id.crime_camera);
+        mPhotoView = v.findViewById(R.id.crime_photo);
         mTitleField.setText(mCrime.getTitle());
         sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm");
         mTitleField.addTextChangedListener(new TextWatcher() {
@@ -171,6 +173,11 @@ public class CrimeFragment extends Fragment {
 
         if (mCrime.getSuspect() != null) {
             mSuspectButton.setText(mCrime.getSuspect());
+        }
+        PackageManager packageManager = getActivity().getPackageManager();
+
+        if (packageManager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY) == null){
+            mSuspectButton.setEnabled(false);
         }
         return v;
     }
